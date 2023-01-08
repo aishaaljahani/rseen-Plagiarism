@@ -1,0 +1,64 @@
+﻿@model Plagiarism.Models.Document
+
+@{
+    ViewBag.Title = "Document Details";
+}
+
+<div>
+    <h4>Document Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayName("Title")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayName("Upload Date")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UploadDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayName("Status")
+        </dt>
+
+        <dd>
+            @if (Model.Status)
+            {
+                <label style="color:green">Accepted</label>
+            }
+            else
+            {
+               <label style="color:red">Rejected</label>
+            }
+
+        </dd>
+        <dt>
+            @Html.DisplayName("Status Details")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StatusDetails)
+        </dd>
+                <dt>
+            @Html.DisplayName("File")
+        </dt>
+
+        <dd>
+            @Html.ActionLink("Download File", "Download", "Document", new { id = Model.Id }, null)
+        </dd>
+    </dl>
+
+    
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "MyDocuments", "Document", new { id = Model.UploaderId }, null)
+</p>
+

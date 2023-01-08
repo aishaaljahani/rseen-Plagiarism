@@ -1,0 +1,46 @@
+﻿@model Plagiarism.Models.PagedList<Plagiarism.Models.Message>
+
+@{
+    ViewBag.Title = "Inbox";
+}
+<div class="well">
+    @using (Html.BeginForm("Inbox", null, FormMethod.Get, new { @class = "form-actions", role = "form" }))
+    {
+        <div class="row">
+            <div>
+                <div class="controls controls-row">
+                    <a class="btn btn-success" data-modal="" href='@Url.Action("SendMessage", "Message")' id="btnCoontact">
+                        <span class=" icon-plus-sign">Contact User</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        <div style="margin-top:17px;">
+            @{
+                var grid = new WebGrid(
+                    canPage: true,
+                    rowsPerPage: Model.PageSize,
+                    canSort: true,
+                    ajaxUpdateContainerId: "grid");
+
+                grid.Bind(Model.Content, rowCount: Model.TotalRecords, autoSortAndPage: false);
+                grid.Pager(WebGridPagerModes.All);
+
+                @grid.GetHtml(htmlAttributes: new { id = "grid" },   // id for ajaxUpdateContainerId parameter
+                               fillEmptyRows: false,
+                               tableStyle: "table table-bordered table-hover",
+                               mode: WebGridPagerModes.All,
+                               columns: grid.Columns(
+                                   grid.Column("AccountFrom.UserName", "From", style: "col-lg-4"),
+                                   grid.Column("Content", "Content", style: "col-lg-4"),
+                                   grid.Column("MessageDate", "Date", format: (item) => item.MessageDate != null ? item.MessageDate.ToString("dd/MM/yyyy") : "", canSort: true),
+
+                               grid.Column(header: "Action", canSort: false, style: "action",
+                                   format: @<text>
+                                            @Html.Raw("<a class='btn btn-info' data-modal='' href='/Message/MessageDetails/" + item.ID + "' id='" + item.ID + "' title='Details'> <span class=' icon-search'> Details</span> </a>")
+                                </text>)));
+            }
+        </div>
+    }
+</div>

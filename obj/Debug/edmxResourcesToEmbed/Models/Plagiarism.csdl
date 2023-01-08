@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="PlagiarismModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Account">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="RoleName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Admin" Relationship="Self.FK_Admin_Account" FromRole="Account" ToRole="Admin" />
+    <NavigationProperty Name="Documents" Relationship="Self.FK_Project_Account" FromRole="Account" ToRole="Document" />
+    <NavigationProperty Name="Student" Relationship="Self.FK_Student_Account" FromRole="Account" ToRole="Student" />
+    <NavigationProperty Name="Teacher" Relationship="Self.FK_Teacher_Account" FromRole="Account" ToRole="Teacher" />
+    <NavigationProperty Name="MessagesFrom" Relationship="PlagiarismModel.FK_Messages_FromUser" FromRole="Account" ToRole="Message" />
+    <NavigationProperty Name="MessagesTo" Relationship="PlagiarismModel.FK_Messages_ToUser" FromRole="Account" ToRole="Message" />
+    <NavigationProperty Name="Replies" Relationship="PlagiarismModel.FK_Reply_Account" FromRole="Account" ToRole="Reply" />
+  </EntityType>
+  <EntityType Name="Admin">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="FullName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="true" />
+    <Property Name="Phone" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="true" />
+    <NavigationProperty Name="Account" Relationship="Self.FK_Admin_Account" FromRole="Admin" ToRole="Account" />
+  </EntityType>
+  <EntityType Name="Document">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Abstract" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="UploaderId" Type="Int32" />
+    <Property Name="FilePath" MaxLength="Max" FixedLength="false" Unicode="true" Type="String" />
+    <Property Name="UploadDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Account" Relationship="Self.FK_Project_Account" FromRole="Document" ToRole="Account" />
+    <Property Name="Status" Type="Boolean" Nullable="false" />
+    <Property Name="StatusDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="Message">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MessageFromId" Type="Int32" Nullable="false" />
+    <Property Name="MessageToId" Type="Int32" Nullable="false" />
+    <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MessageDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="AccountFrom" Relationship="PlagiarismModel.FK_Messages_FromUser" FromRole="Message" ToRole="Account" />
+    <NavigationProperty Name="AccountTo" Relationship="PlagiarismModel.FK_Messages_ToUser" FromRole="Message" ToRole="Account" />
+    <NavigationProperty Name="Replies" Relationship="PlagiarismModel.FK_Reply_MessageId" FromRole="Message" ToRole="Reply" />
+  </EntityType>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="FullName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Account" Relationship="Self.FK_Student_Account" FromRole="Student" ToRole="Account" />
+  </EntityType>
+  <EntityType Name="Teacher">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="FullName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Major" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Phone" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Account" Relationship="Self.FK_Teacher_Account" FromRole="Teacher" ToRole="Account" />
+  </EntityType>
+  <Association Name="FK_Admin_Account">
+    <End Role="Account" Type="Self.Account" Multiplicity="1" />
+    <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Admin">
+        <PropertyRef Name="Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Project_Account">
+    <End Role="Account" Type="Self.Account" Multiplicity="0..1" />
+    <End Role="Document" Type="Self.Document" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Document">
+        <PropertyRef Name="UploaderId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Student_Account">
+    <End Role="Account" Type="Self.Account" Multiplicity="1" />
+    <End Role="Student" Type="Self.Student" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Student">
+        <PropertyRef Name="Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Teacher_Account">
+    <End Role="Account" Type="Self.Account" Multiplicity="1" />
+    <End Role="Teacher" Type="Self.Teacher" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Teacher">
+        <PropertyRef Name="Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="PlagiarismEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Accounts" EntityType="Self.Account" />
+    <EntitySet Name="Admins" EntityType="Self.Admin" />
+    <EntitySet Name="Documents" EntityType="Self.Document" />
+    <EntitySet Name="Messages" EntityType="Self.Message" />
+    <EntitySet Name="Students" EntityType="Self.Student" />
+    <EntitySet Name="Teachers" EntityType="Self.Teacher" />
+    <AssociationSet Name="FK_Admin_Account" Association="Self.FK_Admin_Account">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Admin" EntitySet="Admins" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Project_Account" Association="Self.FK_Project_Account">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Document" EntitySet="Documents" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Student_Account" Association="Self.FK_Student_Account">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Student" EntitySet="Students" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Teacher_Account" Association="Self.FK_Teacher_Account">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Teacher" EntitySet="Teachers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_FromUser" Association="PlagiarismModel.FK_Messages_FromUser">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_ToUser" Association="PlagiarismModel.FK_Messages_ToUser">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+    <EntitySet Name="Replies" EntityType="PlagiarismModel.Reply" />
+    <AssociationSet Name="FK_Reply_Account" Association="PlagiarismModel.FK_Reply_Account">
+      <End Role="Account" EntitySet="Accounts" />
+      <End Role="Reply" EntitySet="Replies" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Reply_MessageId" Association="PlagiarismModel.FK_Reply_MessageId">
+      <End Role="Message" EntitySet="Messages" />
+      <End Role="Reply" EntitySet="Replies" />
+    </AssociationSet>
+  </EntityContainer>
+  <Association Name="FK_Messages_FromUser">
+    <End Type="PlagiarismModel.Account" Role="Account" Multiplicity="1" />
+    <End Type="PlagiarismModel.Message" Role="Message" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="MessageFromId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_ToUser">
+    <End Type="PlagiarismModel.Account" Role="Account" Multiplicity="1" />
+    <End Type="PlagiarismModel.Message" Role="Message" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="MessageToId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Reply">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ReplayText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ReplyDate" Type="DateTime" Precision="3" />
+    <Property Name="MessageId" Type="Int32" Nullable="false" />
+    <Property Name="UserId" Type="Int32" />
+    <NavigationProperty Name="Account" Relationship="PlagiarismModel.FK_Reply_Account" FromRole="Reply" ToRole="Account" />
+    <NavigationProperty Name="Message" Relationship="PlagiarismModel.FK_Reply_MessageId" FromRole="Reply" ToRole="Message" />
+  </EntityType>
+  <Association Name="FK_Reply_Account">
+    <End Type="PlagiarismModel.Account" Role="Account" Multiplicity="0..1" />
+    <End Type="PlagiarismModel.Reply" Role="Reply" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Account">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Reply">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Reply_MessageId">
+    <End Type="PlagiarismModel.Message" Role="Message" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="PlagiarismModel.Reply" Role="Reply" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Message">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Reply">
+        <PropertyRef Name="MessageId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

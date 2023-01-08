@@ -1,0 +1,69 @@
+﻿@model Plagiarism.Models.Message
+
+@{
+    ViewBag.Title = "Message";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var replies = (IEnumerable<Plagiarism.Models.Reply>)ViewBag.Replies;
+
+}
+<div class="well">
+<div class="form-actions">
+    <h4>@ViewBag.Title</h4>
+    <hr />
+    <div class="control-group">
+        <div>
+            <dl class="dl-horizontal">
+
+                <dt>
+                    @Html.DisplayName("From")
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.AccountFrom.UserName)
+                </dd>
+            </dl>
+
+            <dl class="dl-horizontal">
+
+                <dt>
+                    @Html.DisplayName("Message Date")
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.MessageDate)
+                </dd>
+            </dl>
+
+            <dl class="dl-horizontal">
+
+                <dt>
+                    @Html.DisplayName("Content")
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Content)
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<h5>Comments</h5>
+
+    @foreach (var c in replies)
+    {
+        <hr />
+        <div class="container">
+            <div class="row">
+                    <div> User : @c.Account.UserName  </div>
+                    <div> Date: @c.ReplyDate</div>
+            </div>
+        </div>
+        <hr />
+        <p> @c.ReplayText</p>
+        <hr />
+
+    }
+</div>
+
+@Html.Partial("_CommentBox")

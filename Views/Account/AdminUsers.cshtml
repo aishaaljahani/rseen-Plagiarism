@@ -1,0 +1,59 @@
+﻿@model Plagiarism.Models.PagedList<Plagiarism.Models.Account>
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="well">
+    @using (Html.BeginForm("AdminUsers", null, FormMethod.Get, new { @class = "form-actions", role = "form" }))
+    {
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="controls controls-row">
+                    <input type="text"
+                           name="filter"
+                           value="@ViewBag.filter"
+                           class="form-control"
+                           style="display: inline"
+                           placeholder="Search" />
+
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </div>
+            <div class="pull-right">
+                <a class="btn btn-success" data-modal="" href="/Account/AdminUsersCreate" id="btnCreate">
+                    <span>Add Admin</span>
+                </a>
+            </div>
+        </div>
+
+        <div style="margin-top:17px;">
+            @{
+                var grid = new WebGrid(
+                    canPage: true,
+                    rowsPerPage: Model.PageSize,
+                    canSort: true,
+                    ajaxUpdateContainerId: "grid");
+
+                grid.Bind(Model.Content, rowCount: Model.TotalRecords, autoSortAndPage: false);
+                grid.Pager(WebGridPagerModes.All);
+
+                @grid.GetHtml(htmlAttributes: new { id = "grid" },   // id for ajaxUpdateContainerId parameter
+                fillEmptyRows: false,
+                tableStyle: "table table-bordered table-hover",
+                mode: WebGridPagerModes.All,
+                columns: grid.Columns(
+                    grid.Column("UserName", "User Name"),
+                    grid.Column("Admin.FullName", "Full Name"),
+                    grid.Column("Admin.Email", "Email"),
+                    grid.Column("Admin.Phone", "Phone"),
+                    grid.Column("Admin.Address", "Address"),
+                grid.Column(header: "Action", canSort: false, style: "action",
+                    format: @<text>
+                            @Html.Raw("<a class='btn btn-info' data-modal='' href='/Account/AdminUsersDetails/" + item.ID + "' id='" + item.ID + "' title='Details'> <span class=' icon-search'> Details</span> </a>")
+                            @Html.Raw("<a class='btn btn-warning' data-modal='' href='/Account/AdminUsersEdit/" + item.ID + "' id='" + item.ID + "' title='Edit'> <span class='icon-edit'> Edit</span> </a>")
+                </text>)));
+            }
+        </div>
+    }
+</div>

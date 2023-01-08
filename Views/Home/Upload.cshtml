@@ -1,0 +1,89 @@
+﻿@model Plagiarism.Models.DocumentViewModel
+@{
+    ViewBag.Title = "Upload your document";
+}<div class="well">
+    <div class="form-actions">
+        <h4>@ViewBag.Title.</h4>
+        @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <hr />
+
+            @Html.ValidationSummary("", new { @class = "text-error" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Title, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.Label("Max Size: 4MB -- File Types: docx | pptx | xlsx | pdf", new { @class = "col-md-6 control-label" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.FileUpload, "File", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.FileUpload, new { type = "file", id = "fileUpload", name = "fileUpload", accept = "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,text/plain, application/pdf", onchange = "validateForm()", @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FileUpload, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" class="btn btn-default" value="Upload" />
+                </div>
+            </div>
+        }
+        <hr />
+        @if (ViewBag.Similarity != null)
+        {
+            <h4>Results</h4>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Words Count</th>
+                        <th scope="col">Popular Words Match</th>
+                        <th scope="col">Similarity Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">@ViewBag.WordsCount</th>
+                        <th scope="row">@ViewBag.PopularWordsCount</th>
+                        <th scope="row">
+                            @foreach (var match in ((string)ViewBag.Similarity).Split('¬'))
+                            {
+                                @:<label class="text-info">@match</label><br />
+                            }
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    function validateForm() {
+        var check = true;
+        $("input.require").each(function () {
+            if ($(this).val() == "") {
+                check = false;
+                $(this).addClass("has-error");
+            }
+            else {
+                $(this).removeClass("has-error");
+            }
+        });
+        if (document.getElementById("File").files[0].size > 4194304) {
+            $("#File").addClass("has-error");
+            check = false;
+        }
+        return check;
+    }
+    function CheckSize(pointer) {
+        if (pointer.files[0].size > 4194304) {
+            alert("File size exceeded the limit");
+        }
+    }
+</script>
